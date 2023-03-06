@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   client.c                                           :+:      :+:    :+:   */
+/*   client_bonus.c                                     :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/27 15:51:02 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/03/06 17:47:34 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/03/06 17:49:04 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,11 +28,21 @@ void	send_char(pid_t pid, char c)
 	}
 }
 
+void	incoming_sig(int signal)
+{
+	if (signal == SIGUSR2)
+		ft_printf("Message received by the server");
+}
+
 int	main(int argc, char **argv)
 {
-	pid_t	server_pid;
-	int		i;
+	pid_t				server_pid;
+	struct sigaction	act;
+	int					size;
+	int					i;
 
+	act.sa_handler = incoming_sig;
+	sigaction(SIGUSR2, &act, NULL);
 	if (argc != 3)
 	{
 		printf("Error: Not enough/Too many arguments\n");

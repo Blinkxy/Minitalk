@@ -25,7 +25,7 @@ $(SERVER.BONUS):
 	@echo --- Bonus Server up ---
 
 $(CLIENT.BONUS):
-	@$(CC) $(CFLAGS) client.bonus.c libft/libft.a -o $(CLIENT.BONUS)
+	@$(CC) $(CFLAGS) client_bonus.c libft/libft.a -o $(CLIENT.BONUS)
 	@echo --- Bonus Client up ---
 
 bonus: $(CLIENT.BONUS) $(SERVER.BONUS)
