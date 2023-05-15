@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/12/27 15:51:02 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/03/06 17:49:04 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/03/13 22:38:17 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,7 @@ void	send_char(pid_t pid, char c)
 		else
 			kill(pid, SIGUSR2);
 		i++;
-		usleep(100);
+		usleep(300);
 	}
 }
 
@@ -34,31 +34,39 @@ void	incoming_sig(int signal)
 		ft_printf("Message received by the server");
 }
 
-int	main(int argc, char **argv)
+void	error_pid(char *argv)
 {
-	pid_t				server_pid;
-	struct sigaction	act;
-	int					size;
-	int					i;
-
-	act.sa_handler = incoming_sig;
-	sigaction(SIGUSR2, &act, NULL);
-	if (argc != 3)
-	{
-		printf("Error: Not enough/Too many arguments\n");
-		exit(0);
-	}
-	if (ft_atoi(argv[1]) < 0)
+	if (ft_atoi(argv) < 0)
 	{
 		ft_printf("Invalid PID\n");
 		exit(0);
 	}
-	server_pid = atoi(argv[1]);
-	i = 0;
-	while (argv[2][i])
+}
+
+int	main(int argc, char **argv)
+{
+	pid_t				server_pid;
+	struct sigaction	act;
+	int					i;
+
+	if (argc == 3)
 	{
-		send_char(server_pid, argv[2][i]);
-		i++;
+		act.sa_handler = incoming_sig;
+		sigaction(SIGUSR2, &act, NULL);
+		if (sigaction(SIGUSR2, &act, NULL) == -1)
+		{
+			ft_printf("Error: sigaction failed");
+			exit(EXIT_FAILURE);
+		}
+		error_pid(argv[1]);
+		server_pid = ft_atoi(argv[1]);
+		i = 0;
+		while (argv[2][i])
+		{
+			send_char(server_pid, argv[2][i]);
+			i++;
+		}
+		send_char(server_pid, '\0');
 	}
 	return (0);
 }

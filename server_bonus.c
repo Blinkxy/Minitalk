@@ -6,7 +6,7 @@
 /*   By: mzoheir <mzoheir@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/02/25 17:08:25 by mzoheir           #+#    #+#             */
-/*   Updated: 2023/03/06 17:40:42 by mzoheir          ###   ########.fr       */
+/*   Updated: 2023/03/13 16:52:54 by mzoheir          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,13 +22,14 @@ void	handle_signal(int signum, siginfo_t *info, void *context)
 	{
 		c = 0;
 		i = 0;
-		kill(info->si_pid, SIGUSR2);
 	}
 	pid_c = info->si_pid;
 	(void)context;
 	if (signum == SIGUSR1)
 		c ^= 1 << i;
 	i++;
+	if (i == 8 && c == '\0')
+		kill(info->si_pid, SIGUSR2);
 	if (i == 8)
 	{
 		write(1, &c, 1);
@@ -48,9 +49,13 @@ int	main(void)
 	act.sa_sigaction = handle_signal;
 	sigaction(SIGUSR1, &act, NULL);
 	sigaction(SIGUSR2, &act, NULL);
-	while (1)
+	if (sigaction(SIGUSR1, &act, NULL) == -1 && sigaction(SIGUSR2, &act,
+			NULL) == -1)
 	{
-		pause();
+		ft_printf("Error: sigaction failed");
+		exit(EXIT_FAILURE);
 	}
+	while (1)
+		pause();
 	return (0);
 }
